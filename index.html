@@ -14,6 +14,7 @@
 /* =========================================================
    ブランドカラーはここ1行で変更できます（--brand）
    淡い色・濃い色は color-mix() で --brand から自動生成しています
+   ※ thanks.html にも同じ --brand があるので、変更時は揃えること
    ========================================================= */
 :root {
   --brand: #3d4ed8;
@@ -34,6 +35,7 @@
   --night: #0f1124;
   --mist: #d9f2f7;   /* ヒーロー背景のグラデーション用 */
   --blush: #fbe3d6;  /* 同上（ごく淡く） */
+  --danger: #c62f3d; /* 入力エラー */
 
   --font-sans: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
   --font-mincho: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
@@ -155,6 +157,7 @@ h1, h2, h3 { word-break: auto-phrase; }
 /* メール登録フォーム（ヒーロー／最終CTA共通） */
 .signup { margin-top: 28px; max-width: 480px; }
 .signup-row { display: flex; flex-direction: column; gap: 10px; }
+.signup-field { flex: 1; min-width: 0; }
 .signup input[type="email"] {
   width: 100%; min-height: 52px; padding: 0 20px;
   border: 1px solid var(--line); border-radius: 999px; background: #fff;
@@ -163,9 +166,29 @@ h1, h2, h3 { word-break: auto-phrase; }
 }
 .signup input[type="email"]::placeholder { color: var(--ink-3); }
 .signup input[type="email"]:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-soft); }
+.signup input[type="email"][aria-invalid="true"] { border-color: var(--danger); }
+.signup input[type="email"][aria-invalid="true"]:focus { box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 14%, #fff); }
 .signup-note { margin-top: 12px; font-size: 13px; color: var(--ink-3); }
-.signup-done { margin-top: 12px; font-size: 14px; font-weight: 500; color: var(--brand); }
-.signup-done[hidden] { display: none; }
+.signup-step[hidden], .field-error[hidden] { display: none; }
+.field-error { margin-top: 8px; padding-left: 20px; font-size: 13px; line-height: 1.6; font-weight: 500; color: var(--danger); }
+
+/* 確認画面（同じフォーム内で入力欄と切り替える） */
+.signup-confirm {
+  padding: 20px; border-radius: var(--radius-sm);
+  background: #fff; border: 1px solid var(--brand-line);
+  box-shadow: 0 16px 32px -24px color-mix(in srgb, var(--brand) 50%, transparent);
+}
+.confirm-title { font-size: 15px; font-weight: 700; }
+.confirm-title:focus { outline: none; }
+.confirm-list { margin: 12px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--brand-softer); }
+.confirm-list dt { font-size: 12px; color: var(--ink-3); letter-spacing: .06em; }
+.confirm-list dd { margin: 2px 0 0; font-weight: 700; overflow-wrap: anywhere; }
+.confirm-note { margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+.confirm-actions { display: flex; gap: 10px; margin-top: 16px; }
+.confirm-actions .btn { flex: 1; padding: 0 16px; }
+.confirm-actions .btn-primary { flex: 1.6; }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn-primary:disabled:hover { background: var(--brand); }
 .hero-sub-cta { margin-top: 20px; }
 
 /* 画面イメージ（ダミーUI：実際の画面ではない抽象表現） */
@@ -344,7 +367,7 @@ h1, h2, h3 { word-break: auto-phrase; }
    タブレット以上
    ========================================================= */
 @media (min-width: 600px) {
-  .signup-row { flex-direction: row; }
+  .signup-row { flex-direction: row; align-items: flex-start; }
   .signup-row .btn { flex: none; }
   .feature-grid { grid-template-columns: 1fr 1fr; }
   .plans { grid-template-columns: 1fr 1fr; }
@@ -410,15 +433,35 @@ h1, h2, h3 { word-break: auto-phrase; }
       <!-- CLIENT: リード文は仮（brief「商品」の説明をそのまま文章化）。確定コピーに差し替え -->
       <p class="hero-lead">GijiLog（ギジログ）は、会議の録音をアップロードするだけで、要約とToDoを自動でまとめるAIツールです。Web会議の録画ファイルにも、対面の会議の録音にも対応しています。</p>
 
-      <form class="signup js-signup" novalidate>
-        <div class="signup-row">
-          <label class="sr-only" for="email-hero">メールアドレス</label>
-          <input id="email-hero" type="email" name="email" placeholder="メールアドレス" autocomplete="email" required>
-          <button class="btn btn-primary" type="submit">無料で試してみる</button>
+      <!-- 登録フォーム：SSGformへ通常のPOST送信。入力 → 確認（同じフォーム内で切り替え）→ 送信 → thanks.html（SSGform管理画面で転送先を設定） -->
+      <form class="signup js-signup" action="https://ssgform.com/s/HsLaiyQkmGTd" method="post">
+        <!-- スパム対策（SSGform公式の簡易スパム対策：name="wana" を見えない状態で設置） -->
+        <div style="display: none;"><input type="text" name="wana" /></div>
+
+        <div class="signup-step" data-step="input">
+          <div class="signup-row">
+            <div class="signup-field">
+              <label class="sr-only" for="email-hero">メールアドレス</label>
+              <input id="email-hero" type="email" name="メールアドレス" placeholder="メールアドレス" autocomplete="email" required aria-describedby="email-hero-error">
+              <p class="field-error" id="email-hero-error" hidden></p>
+            </div>
+            <button class="btn btn-primary" type="submit">無料で試してみる</button>
+          </div>
+          <p class="signup-note">メールアドレスだけで始められます。フリープランは月5回まで無料です。</p>
         </div>
-        <p class="signup-note">メールアドレスだけで始められます。フリープランは月5回まで無料です。</p>
-        <!-- CLIENT: 送信後メッセージは仮 -->
-        <p class="signup-done" role="status" hidden>送信しました（デモのため実際には送信されません）</p>
+
+        <div class="signup-step signup-confirm" data-step="confirm" hidden>
+          <p class="confirm-title" tabindex="-1">入力内容の確認</p>
+          <dl class="confirm-list">
+            <dt>メールアドレス</dt>
+            <dd data-confirm="email"></dd>
+          </dl>
+          <p class="confirm-note">この内容でよろしければ「送信する」を押してください。</p>
+          <div class="confirm-actions">
+            <button class="btn btn-ghost" type="button" data-action="back">戻る</button>
+            <button class="btn btn-primary" type="submit" data-action="send">送信する</button>
+          </div>
+        </div>
       </form>
 
       <div class="hero-sub-cta">
@@ -639,15 +682,35 @@ h1, h2, h3 { word-break: auto-phrase; }
       <h2 class="final-title" id="final-title" style="margin-top:14px">次の会議から、<br>議事録は<span class="accent">GijiLog</span>に。</h2>
     </div>
     <div class="reveal">
-      <form class="signup js-signup" novalidate>
-        <div class="signup-row">
-          <label class="sr-only" for="email-final">メールアドレス</label>
-          <input id="email-final" type="email" name="email" placeholder="メールアドレス" autocomplete="email" required>
-          <button class="btn btn-primary" type="submit">無料で試してみる</button>
+      <!-- 登録フォーム：ヒーローのフォームと同じ作り（SSGformへ通常のPOST送信） -->
+      <form class="signup js-signup" action="https://ssgform.com/s/HsLaiyQkmGTd" method="post">
+        <!-- スパム対策（SSGform公式の簡易スパム対策：name="wana" を見えない状態で設置） -->
+        <div style="display: none;"><input type="text" name="wana" /></div>
+
+        <div class="signup-step" data-step="input">
+          <div class="signup-row">
+            <div class="signup-field">
+              <label class="sr-only" for="email-final">メールアドレス</label>
+              <input id="email-final" type="email" name="メールアドレス" placeholder="メールアドレス" autocomplete="email" required aria-describedby="email-final-error">
+              <p class="field-error" id="email-final-error" hidden></p>
+            </div>
+            <button class="btn btn-primary" type="submit">無料で試してみる</button>
+          </div>
+          <p class="signup-note">メールアドレスだけで始められます。フリープランは月5回まで無料です。</p>
         </div>
-        <p class="signup-note">メールアドレスだけで始められます。フリープランは月5回まで無料です。</p>
-        <!-- CLIENT: 送信後メッセージは仮 -->
-        <p class="signup-done" role="status" hidden>送信しました（デモのため実際には送信されません）</p>
+
+        <div class="signup-step signup-confirm" data-step="confirm" hidden>
+          <p class="confirm-title" tabindex="-1">入力内容の確認</p>
+          <dl class="confirm-list">
+            <dt>メールアドレス</dt>
+            <dd data-confirm="email"></dd>
+          </dl>
+          <p class="confirm-note">この内容でよろしければ「送信する」を押してください。</p>
+          <div class="confirm-actions">
+            <button class="btn btn-ghost" type="button" data-action="back">戻る</button>
+            <button class="btn btn-primary" type="submit" data-action="send">送信する</button>
+          </div>
+        </div>
       </form>
       <div class="hero-sub-cta">
         <!-- CLIENT: デモのリンク先未定（仮に # ） -->
@@ -696,16 +759,77 @@ h1, h2, h3 { word-break: auto-phrase; }
     items.forEach(function (el) { el.classList.add('is-in'); });
   }
 
-  // 登録フォーム：ダミー送信（brief：送信は console.log に留める）
+  // 登録フォーム：入力 → 確認 → 送信（SSGformへ通常のPOST送信）
+  // JSが動かない環境では、ブラウザ標準の入力チェックだけで確認画面なしに送信される
+  var EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var SEND_LABEL = '送信する';
+  var SENDING_LABEL = '送信中…';
+
   document.querySelectorAll('.js-signup').forEach(function (form) {
-    form.addEventListener('submit', function (ev) {
-      ev.preventDefault();
-      var input = form.querySelector('input[type="email"]');
-      if (!input.checkValidity()) { input.reportValidity(); input.focus(); return; }
-      console.log('[GijiLog dummy signup]', { email: input.value });
-      form.querySelector('.signup-done').hidden = false;
-      input.value = '';
+    var inputStep = form.querySelector('[data-step="input"]');
+    var confirmStep = form.querySelector('[data-step="confirm"]');
+    var input = form.querySelector('input[type="email"]');
+    var error = document.getElementById(input.getAttribute('aria-describedby'));
+    var confirmTitle = confirmStep.querySelector('.confirm-title');
+    var confirmEmail = confirmStep.querySelector('[data-confirm="email"]');
+    var sendButton = confirmStep.querySelector('[data-action="send"]');
+    var backButton = confirmStep.querySelector('[data-action="back"]');
+    var touched = false; // 一度エラーを出したら、入力のたびに再チェックする
+
+    form.noValidate = true; // 入力チェックはJSで行う
+
+    function validate() {
+      var value = input.value.trim();
+      var message = '';
+      if (value === '') message = 'メールアドレスを入力してください。';
+      else if (!EMAIL_PATTERN.test(value)) message = 'メールアドレスの形式が正しくありません（例：name@example.com）。';
+      error.textContent = message;
+      error.hidden = message === '';
+      input.setAttribute('aria-invalid', message === '' ? 'false' : 'true');
+      return message === '';
+    }
+
+    function showStep(step) {
+      var isConfirm = step === 'confirm';
+      form.dataset.step = step;
+      inputStep.hidden = isConfirm;
+      confirmStep.hidden = !isConfirm;
+    }
+
+    function resetSendButton() {
+      delete form.dataset.sending;
+      sendButton.disabled = false;
+      sendButton.textContent = SEND_LABEL;
+    }
+
+    input.addEventListener('input', function () { if (touched) validate(); });
+
+    backButton.addEventListener('click', function () {
+      showStep('input'); // 入力欄は隠していただけなので、入力内容はそのまま残る
+      input.focus();
     });
+
+    form.addEventListener('submit', function (ev) {
+      // 入力画面：チェックして確認画面へ（ここでは送信しない）
+      if (form.dataset.step !== 'confirm') {
+        ev.preventDefault();
+        touched = true;
+        if (!validate()) { input.focus(); return; }
+        input.value = input.value.trim();
+        confirmEmail.textContent = input.value;
+        showStep('confirm');
+        confirmTitle.focus();
+        return;
+      }
+      // 確認画面：そのまま通常送信。二重送信を防ぐためボタンを無効にする
+      if (form.dataset.sending) { ev.preventDefault(); return; }
+      form.dataset.sending = '1';
+      sendButton.disabled = true;
+      sendButton.textContent = SENDING_LABEL;
+    });
+
+    // ブラウザの「戻る」でキャッシュから復元されたとき、送信ボタンを押せる状態に戻す
+    window.addEventListener('pageshow', function (ev) { if (ev.persisted) resetSendButton(); });
   });
 })();
 </script>
