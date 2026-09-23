@@ -4,6 +4,8 @@ GijiLog（架空の議事録要約AIサービス）のLPを、Claude Codeで設�
 
 副業ポートフォリオ用の架空案件です。実在のクライアント・サービスはありません。
 
+**公開ページ：https://tmy-adc329.github.io/gijilog-lp/**
+
 ## デモ
 
 ![GijiLog LPのデモ（ページを開いて上から下までスクロール）](demo.gif)
