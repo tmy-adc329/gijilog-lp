@@ -17,17 +17,12 @@
 
   /* --brand から派生（原則さわらなくてOK） */
   --brand-deep: color-mix(in srgb, var(--brand) 70%, #0b0f2a);
-  --brand-soft: color-mix(in srgb, var(--brand) 10%, #fff);
   --brand-softer: color-mix(in srgb, var(--brand) 5%, #fff);
 
   /* ニュートラル・装飾（index.html と同じ値） */
   --ink: #14162b;
-  --ink-2: #4a4e66;
-  --line: #e3e5ee;
   --paper: #ffffff;
   --night: #0f1124;
-  --mist: #d9f2f7;
-  --blush: #fbe3d6;
 
   --font-sans: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
   --font-latin: "Instrument Serif", Georgia, serif;
@@ -83,22 +78,12 @@ svg { display: block; }
 .site-header .container { display: flex; align-items: center; height: 64px; }
 
 /* 完了メッセージ */
-.thanks { position: relative; flex: 1; display: flex; align-items: center; overflow: hidden; padding: 72px 0 96px; }
-.thanks::before {
-  content: ""; position: absolute; inset: 0; z-index: -1;
-  background:
-    radial-gradient(40% 50% at 85% 20%, color-mix(in srgb, var(--brand) 22%, transparent), transparent 70%),
-    radial-gradient(40% 45% at 100% 70%, var(--mist), transparent 72%),
-    radial-gradient(30% 30% at 0% 100%, var(--blush), transparent 70%),
-    linear-gradient(180deg, #fff, var(--brand-softer));
-  filter: blur(8px);
-}
+.thanks { flex: 1; display: flex; align-items: center; padding: 72px 0 96px; background: var(--brand-softer); }
 .thanks-inner { display: grid; gap: 24px; justify-items: start; }
 .thanks-mark {
   width: 64px; height: 64px; border-radius: 50%;
   display: grid; place-items: center;
   background: var(--brand); color: #fff;
-  box-shadow: 0 16px 32px -16px color-mix(in srgb, var(--brand) 70%, transparent);
 }
 .thanks-mark svg { width: 30px; height: 30px; }
 .thanks-title { font-size: clamp(26px, 7vw, 48px); line-height: 1.4; font-weight: 700; }
