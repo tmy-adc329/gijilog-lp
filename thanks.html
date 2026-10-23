@@ -7,10 +7,10 @@
 <title>送信完了｜GijiLog（ギジログ）</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
-   ブランドカラー（--brand）は index.html と揃えること
+   ブランドカラー（--brand）・文字サイズ・余白の段階は index.html と揃えること
    ========================================================= */
 :root {
   --brand: #3d4ed8;
@@ -19,13 +19,28 @@
   --brand-deep: color-mix(in srgb, var(--brand) 70%, #0b0f2a);
   --brand-softer: color-mix(in srgb, var(--brand) 5%, #fff);
 
-  /* ニュートラル・装飾（index.html と同じ値） */
+  /* ニュートラル（index.html と同じ値） */
   --ink: #14162b;
   --paper: #ffffff;
   --night: #0f1124;
 
   --font-sans: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
   --font-latin: "Instrument Serif", Georgia, serif;
+
+  /* 文字サイズの段階（index.html と同じ） */
+  --fs-note: 14px;
+  --fs-body: 16px;
+  --fs-h1: 30px;
+
+  /* 余白の段階（index.html と同じ） */
+  --sp-2: 8px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10: 120px;
 
   --gutter: 20px;
   --maxw: 1120px;
@@ -39,7 +54,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: var(--fs-body);
   line-height: 1.8;
   letter-spacing: .02em;
   -webkit-font-smoothing: antialiased;
@@ -47,9 +62,14 @@ body {
 }
 h1, p { margin: 0; }
 svg { display: block; }
-:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 55%, #fff); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
 
-.nw { white-space: nowrap; }
+/* 見出し：文字詰めは見出しだけ。改行は文節で（使えないブラウザでは単語を割らない） */
+h1 { font-feature-settings: "palt"; word-break: keep-all; overflow-wrap: anywhere; }
+@supports (word-break: auto-phrase) {
+  h1 { word-break: auto-phrase; text-wrap: balance; }
+}
+
 .container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
 
 /* ワードマーク（テキストロゴ） */
@@ -57,16 +77,19 @@ svg { display: block; }
   display: inline-flex; align-items: baseline;
   font-size: 24px; line-height: 1; text-decoration: none; color: var(--ink);
   letter-spacing: 0;
+  transition: opacity .2s;
 }
+.wordmark:hover { opacity: .7; }
+.site-header .wordmark { padding: 10px 0; } /* 押せる高さを44px以上に */
 .wordmark b { font-family: var(--font-sans); font-weight: 700; letter-spacing: -.01em; }
 .wordmark i { font-family: var(--font-latin); font-style: italic; font-weight: 400; font-size: 1.18em; color: var(--brand); margin-left: 1px; }
 
 /* ボタン */
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 52px; padding: 0 26px;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 52px; padding: 0 var(--sp-5);
   border-radius: 999px; border: 1px solid transparent;
-  font: inherit; font-weight: 700; font-size: 15px; letter-spacing: .04em;
+  font: inherit; font-weight: 700; font-size: var(--fs-body); letter-spacing: .04em;
   text-decoration: none; cursor: pointer; white-space: nowrap;
   transition: background-color .2s, color .2s, border-color .2s;
 }
@@ -75,30 +98,41 @@ svg { display: block; }
 .btn svg { width: 18px; height: 18px; }
 
 /* ヘッダー */
-.site-header .container { display: flex; align-items: center; height: 64px; }
+.site-header .container { display: flex; align-items: center; min-height: 64px; }
 
 /* 完了メッセージ */
-.thanks { flex: 1; display: flex; align-items: center; padding: 72px 0 96px; background: var(--brand-softer); }
-.thanks-inner { display: grid; gap: 24px; justify-items: start; }
+.thanks { flex: 1; display: flex; align-items: center; padding: var(--sp-8) 0 var(--sp-9); background: var(--brand-softer); }
+.thanks-inner { display: grid; gap: var(--sp-5); justify-items: start; }
 .thanks-mark {
   width: 64px; height: 64px; border-radius: 50%;
   display: grid; place-items: center;
   background: var(--brand); color: #fff;
 }
 .thanks-mark svg { width: 30px; height: 30px; }
-.thanks-title { font-size: clamp(26px, 7vw, 48px); line-height: 1.4; font-weight: 700; }
-.thanks-actions { margin-top: 8px; }
+.thanks-title { font-size: var(--fs-h1); line-height: 1.4; font-weight: 700; }
+.thanks-actions { margin-top: var(--sp-2); }
 
 /* フッター */
-.site-footer { padding: 40px 0 32px; background: var(--night); color: rgba(255,255,255,.7); }
-.site-footer .wordmark { color: #fff; font-size: clamp(36px, 10vw, 72px); }
+.site-footer { padding: var(--sp-7) 0 var(--sp-6); background: var(--night); color: rgba(255,255,255,.76); }
+.site-footer :focus-visible { outline-color: #fff; }
+.site-footer .wordmark { color: #fff; font-size: clamp(40px, 10vw, 72px); }
 .site-footer .wordmark i { color: color-mix(in srgb, var(--brand) 45%, #fff); }
-.footer-bottom { margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.12); font-size: 12px; }
+.footer-note { margin-top: var(--sp-5); font-size: var(--fs-note); }
+.footer-bottom { margin-top: var(--sp-4); padding-top: var(--sp-4); border-top: 1px solid rgba(255,255,255,.12); font-size: var(--fs-note); }
+
+/* 動きを減らす設定のときは、色の切り替えも止める */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}
 
 @media (min-width: 768px) {
   :root { --gutter: 32px; }
-  .thanks { padding: 120px 0 140px; }
+  .thanks { padding: var(--sp-10) 0; }
   .thanks-inner { justify-items: center; text-align: center; }
+}
+
+@media (min-width: 1024px) {
+  :root { --fs-h1: 44px; }
 }
 </style>
 </head>
@@ -115,8 +149,7 @@ svg { display: block; }
     <div class="thanks-mark" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
     </div>
-    <h1 class="thanks-title"><span class="nw">送信</span><span class="nw">ありがとうございました</span></h1>
-    <!-- CLIENT: 送信後の案内文（確認メールの有無・今後の流れなど）が決まればここに入る -->
+    <h1 class="thanks-title">送信<wbr>ありがとうございました</h1>
     <p class="thanks-actions">
       <a class="btn btn-primary" href="./index.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
@@ -129,6 +162,7 @@ svg { display: block; }
 <footer class="site-footer">
   <div class="container">
     <a class="wordmark" href="./index.html" aria-label="GijiLog トップへ"><b>Giji</b><i>Log</i></a>
+    <p class="footer-note">制作実績（ポートフォリオ）用に作成した架空のサービスです。実在しません。</p>
     <div class="footer-bottom">
       <!-- CLIENT: 運営会社名・利用規約・プライバシーポリシーのリンクが入る -->
       <span>&copy; GijiLog</span>
